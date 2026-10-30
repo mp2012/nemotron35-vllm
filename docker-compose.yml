@@ -1,0 +1,67 @@
+# Nemotron-3.5-Lightning vLLM 服务
+# 用法：
+#   docker compose up -d            # 启动（需先下载权重，见 scripts/download.sh）
+#   docker compose logs -f         # 看日志
+#   docker compose down            # 停止并删容器（权重在宿主机，不丢）
+#
+# 镜像 ENTRYPOINT 固定为 ["vllm","serve"]，因此 command 里不要再写 serve，
+# 模型路径以位置参数传入。
+
+services:
+  nemotron35:
+    image: vllm/vllm-openai:v0.27.1
+    container_name: nemotron35
+    ipc: host
+    shm_size: 16g
+    # GPU 分配（等价于 --gpus all）
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    volumes:
+      # 本地已下载的 NVFP4 权重（只读挂载）
+      - /home/azureuser/models/nemotron-3.5-lightning-nvfp4:/models/nemotron:ro
+    # 接入本机已运行的 Open-WebUI / Dify 所在网络，使其可用容器名 nemotron35:8000 访问
+    networks:
+      - default
+      - nocobase-ai_default
+      - aicomic-dify_default
+    command:
+      - /models/nemotron
+      - --served-model-name
+      - nemotron-3.5-lightning
+      - --trust-remote-code
+      - --max-model-len
+      - "131072"
+      - --gpu-memory-utilization
+      - "0.90"
+      - --max-num-seqs
+      - "32"
+      - --max-num-batched-tokens
+      - "16384"
+      - --enable-prefix-caching
+      - --mamba-backend
+      - flashinfer
+      - --mamba-cache-mode
+      - align
+      - --mamba-ssm-cache-dtype
+      - float16
+      - --reasoning-parser
+      - nemotron_v3
+      - --tool-call-parser
+      - qwen3_coder
+      - --enable-auto-tool-choice
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+
+# 复用本机其他 compose 项目创建的网络（external：不创建、只引用）
+networks:
+  nocobase-ai_default:
+    external: true
+  aicomic-dify_default:
+    external: true
