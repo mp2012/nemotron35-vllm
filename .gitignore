@@ -1,0 +1,18 @@
+# 日志
+*.log
+
+# 本地环境 / 密钥
+.env
+.env.*
+
+# Python
+__pycache__/
+*.pyc
+
+# 编辑器
+.vscode/
+.idea/
+
+# 操作系统
+.DS_Store
+Thumbs.db
