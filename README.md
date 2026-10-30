@@ -209,6 +209,10 @@ CHECK_INFER=1 bash scripts/healthcheck.sh               # 额外做一次推理�
 
 ![HuggingFace NVIDIA 组织页](assets/hf-nvidia-org.png)
 
+### 运行监控：SYS CORE 总览页（CPU / 内存 / 磁盘 / 网络，服务常驻）
+
+![SYS CORE 总览页](assets/syscore-overview.png)
+
 ### 运行监控：SYS CORE 显卡页（A100 80GB，显存 71.8 / 80.0 GB，服务常驻约 73GB）
 
 ![SYS CORE 显卡页](assets/syscore-gpu.png)
